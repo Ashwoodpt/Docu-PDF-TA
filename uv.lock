@@ -347,6 +347,7 @@ dependencies = [
     { name = "python-multipart" },
     { name = "redis" },
     { name = "shapely" },
+    { name = "st-clickable-images" },
     { name = "streamlit" },
     { name = "streamlit-image-select" },
     { name = "structlog" },
@@ -383,6 +384,7 @@ requires-dist = [
     { name = "redis", specifier = ">=7.1.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
     { name = "shapely", specifier = ">=2.1.2" },
+    { name = "st-clickable-images", specifier = ">=0.0.3" },
     { name = "streamlit", specifier = ">=1.29.0" },
     { name = "streamlit-image-select", specifier = ">=0.6.0" },
     { name = "structlog", specifier = ">=23.2.0" },
@@ -1911,6 +1913,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/44/cd/a040c4b3119bbe532e5b0732286f805445375489fceaec1f48306068ee3b/smmap-5.0.2.tar.gz", hash = "sha256:26ea65a03958fa0c8a1c7e8c7a58fdc77221b8910f6be2131affade476898ad5", size = 22329, upload-time = "2025-01-02T07:14:40.909Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/be/d09147ad1ec7934636ad912901c5fd7667e1c858e19d355237db0d0cd5e4/smmap-5.0.2-py3-none-any.whl", hash = "sha256:b30115f0def7d7531d22a0fb6502488d879e75b260a9db4d0819cfb25403af5e", size = 24303, upload-time = "2025-01-02T07:14:38.724Z" },
+]
+
+[[package]]
+name = "st-clickable-images"
+version = "0.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "streamlit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f8/f1/ed438cff4c30243b71fb5eba5146208a2d982788a3df2e3a6a1bd42beaf3/st-clickable-images-0.0.3.tar.gz", hash = "sha256:84a1337f9364bdb8f5a3c4d85faa6695fd959f449915a616a3a3a47e37b1f7f1", size = 367319, upload-time = "2022-01-30T16:29:39.826Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bb/cf/d5447d3fc5d797cbef0f7c3d538a6231db4aa79e41b7ee21f2a6ec429073/st_clickable_images-0.0.3-py3-none-any.whl", hash = "sha256:c35555a660233be01f502202a210f01129f9d111033a8b1f2a4dac0ae177fcd8", size = 375954, upload-time = "2022-01-30T16:29:34.42Z" },
 ]
 
 [[package]]
