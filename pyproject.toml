@@ -14,6 +14,7 @@ dependencies = [
     "structlog>=23.2.0",
     "python-multipart>=0.0.6",
     "streamlit-image-select>=0.6.0",
+    "fitz>=0.0.1.dev2",
 ]
 
 [project.optional-dependencies]
