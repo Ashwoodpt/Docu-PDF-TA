@@ -201,17 +201,18 @@ These settings can be overridden by environment variables or command-line argume
 7. Open a Pull Request
 
 ## Dependencies
-
 This project uses several key dependencies:
 
 - **Streamlit**: Web framework for the UI
 - **Pydantic**: Data validation and settings management
 - **Redis**: Optional backend for asset storage
 - **WeasyPrint**: PDF generation from HTML/CSS
+- **PyMuPDF (fitz)**: PDF processing and preview generation
 - **Shapely**: Geometric operations
 - **NumPy**: Mathematical computations
 - **Pandas**: Data manipulation
 - **lxml**: XML/SVG processing
+
 
 ## Troubleshooting
 
@@ -241,10 +242,18 @@ This project uses several key dependencies:
    # Or using pip
    pip install streamlit
    ```
-
 5. **uv not found**: Install uv:
    ```bash
    pip install uv
+   ```
+
+6. **fitz import error**: If you encounter an error with importing fitz, ensure you have the correct PyMuPDF package installed:
+   ```bash
+   # Using uv
+   uv pip install PyMuPDF
+   
+   # Or using pip
+   pip install PyMuPDF
    ```
 
 ## License
