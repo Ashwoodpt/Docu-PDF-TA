@@ -1,0 +1,15 @@
+@use "../variables";
+
+.links-container {
+  font-size: variables.$font-size-header-md;
+}
+
+.rights-container {
+  gap: variables.$spacing-lg;
+  font-size: variables.$font-size-header-sm;
+  
+  .footer-logo {
+    width: 120px;
+    height: auto;
+  }
+}

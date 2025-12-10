@@ -1,0 +1,33 @@
+@use "../variables";
+
+.header-container {
+   padding: variables.$spacing-md 0;
+   color: variables.$color-black;
+  
+  svg {
+    width: 200px;
+    height: 30px;
+  }
+  
+  font-size: variables.$font-size-header-sm;
+  font-weight: 400;
+  text-align: right;
+  
+  .logo-section {
+    width: min-content;
+  }
+}
+
+.links-container {
+  font-size: variables.$font-size-header-md;
+}
+
+.rights-container {
+  gap: variables.$spacing-lg;
+  font-size: variables.$font-size-header-sm;
+  
+  .footer-logo {
+    width: 120px;
+    height: auto;
+  }
+}

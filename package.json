@@ -1,0 +1,15 @@
+{
+  "name": "docusketch-pdf-styles",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:scss": "sass src/styles/scss:src/streamlit/static/css --style compressed --no-source-map",
+    "build:scss:watch": "sass src/styles/scss:src/streamlit/static/css --style compressed --watch",
+    "copy-css": "copyfiles -f src/styles/CSS/*.css src/streamlit/static/css"
+  },
+  "devDependencies": {
+    "sass": "^1.70.0",
+    "copyfiles": "^2.4.1"
+  }
+}
+

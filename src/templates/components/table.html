@@ -1,0 +1,24 @@
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                {% for header in table_data.headers %}
+                    {% if not header.startswith('Unnamed') %}
+                        <th class="table-header">{{ header }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table_data.data %}
+                <tr>
+                    {% for header in table_data.headers %}
+                        {% if not header.startswith('Unnamed') %}
+                            <td class="table-cell">{{ row[header]|default("",true) }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

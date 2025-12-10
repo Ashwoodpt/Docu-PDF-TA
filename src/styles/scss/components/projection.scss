@@ -1,0 +1,17 @@
+@use "../variables";
+
+.projection-container {
+  h5 {
+    margin: 0;
+    padding: 0;
+  }
+
+  .sub-images-container {
+    gap: variables.$spacing-lg;
+
+    img {
+      height: auto;
+      width: 50%;
+    }
+  }
+}

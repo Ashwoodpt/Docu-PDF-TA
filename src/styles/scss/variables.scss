@@ -1,0 +1,77 @@
+// Color Variables
+$color-primary: #000;
+$color-secondary: #333;
+$color-tertiary: #666;
+$color-white: #fff;
+$color-black: #000;
+$color-light-gray: #ccc;
+$color-medium-gray: #e6e6e6;
+$color-lighter-gray: #f2f2f2;
+$color-silver: silver;
+$color-blue: #3498db;
+$color-red: #ff4b4b;
+$color-dark-bg: #262730;
+
+// Opacity Colors
+$color-transparent: rgba(0, 0, 0, 0);
+$color-semi-transparent: rgba(0, 0, 0, 0.5);
+$color-scrollbar-thumb: rgba(180, 180, 180, 0.5);
+$color-spinner-border: #f3f3f3;
+
+// Spacing Variables
+$spacing-xs: 5px;
+$spacing-sm: 10px;
+$spacing-md: 15px;
+$spacing-lg: 20px;
+$spacing-xl: 25px;
+$spacing-xxl: 30px;
+
+$spacing-pt-xs: 5pt;
+$spacing-pt-sm: 10pt;
+$spacing-pt-md: 15pt;
+$spacing-pt-lg: 20pt;
+$spacing-pt-xl: 30pt;
+
+// Size Variables
+$size-scrollbar-width: 8px;
+$size-scrollbar-radius: 4px;
+$size-border-radius-sm: 5px;
+$size-border-radius-md: 10px;
+$size-border-radius-lg: 15px;
+$size-spinner: 40px;
+$size-dot: 5px;
+
+// Typography Variables
+$font-family-main: "Roboto", Arial, sans-serif;
+$line-height-default: 1.35;
+$font-size-loading-title: 18px;
+$font-size-loading-subtext: 14px;
+$font-size-header-sm: 10pt;
+$font-size-header-md: 12pt;
+
+// Document Grid Variables
+$doc-card-width: 275px;
+$doc-card-max-width: 350px;
+$doc-card-height: 479px;
+$doc-grid-gap: 20px;
+$doc-card-max-height: 529px;
+
+// Page Container Variables
+$page-container-max-width: 595pt;
+$page-container-height: 842pt;
+
+// Z-index Variables
+$z-index-loading: 9999;
+
+// Max Width Variables
+$max-width-content: 800px;
+
+// Border Variables
+$border-width: 1px;
+$border-width-thick: 4px;
+
+// Animation Variables
+$animation-duration: 1s;
+$animation-timing: linear;
+$transition-duration: 0.3s;
+$transition-timing: ease-in-out;

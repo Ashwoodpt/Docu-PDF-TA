@@ -1,0 +1,8 @@
+@use "../variables";
+
+.document-grid {
+  display: grid;
+  padding: variables.$spacing-lg;
+  grid-template-columns: repeat(auto-fill, minmax(variables.$doc-card-width, variables.$doc-card-max-width));
+ gap: variables.$doc-grid-gap;
+}

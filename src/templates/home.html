@@ -1,0 +1,89 @@
+<html>
+    {% if embedded_css %}
+        {{ embedded_css | safe }}
+    {% endif %}
+    <body>
+        <div class="page-container">
+            <div class="document-grid ">
+                {% if documents %}
+                {% for document in documents %}
+                <div class="card-container flex-column gap-10 m-10 mt-0">
+                  <div id="documents:{{document.name}}.json" class="document-card flex-center flex-column align-start gap-10">
+                      <h5>{{ document.name }}</h4>
+                      <img src="{{ document.preview }}" alt="fail">
+                      <div class="document-info flex-column">
+                          <span>modified at: {{ document.updated_at }}</span>
+                          <span>pages: {{ document.page_count }}</span>
+                      </div>
+                    </div>
+                    <div id="delete:{{document.name}}" class="delete-button-container">
+                        <button>Delete</button>
+                    </div>
+
+                </div>
+                {% endfor %}
+                {% endif %}
+                <div id="add_new_document" class="document-card flex-center flex-column align-start gap-10">
+                    <div class="new-document-container">
+                        <button>+</button>
+                    </div>
+                    <div class="flex-center w-100 mb-10"><span>New document</span></div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        function sendMessageToStreamlitClient(type, data) {
+            var outData = Object.assign({
+              isStreamlitMessage: true,
+              type: type,
+            }, data);
+            window.parent.postMessage(outData, "*");
+          }
+          function init() {
+            sendMessageToStreamlitClient("streamlit:componentReady", {apiVersion: 1});
+          }
+    
+          function setFrameHeight(height) {
+            sendMessageToStreamlitClient("streamlit:setFrameHeight", {height: height});
+          }
+    
+          // The `data` argument can be any JSON-serializable value.
+          function sendDataToPython(data) {
+            sendMessageToStreamlitClient("streamlit:setComponentValue", data);
+          }
+    
+          var add_button = document.getElementById('add_new_document')
+    
+          function onDataFromPython(event) {
+            if (event.data.type !== "streamlit:render") return;
+            return
+          }
+    
+          add_button.addEventListener('click', () => {
+            sendDataToPython({value: {"action": "add_new_document"}, dataType: 'string'})
+          })
+          delete_buttons = Array.from(document.getElementsByClassName('delete-button-container')).map(el => Array.from(el.getElementsByTagName('button'))).flat();
+          delete_buttons.forEach(el => {
+            el.addEventListener('click', () => {
+              sendDataToPython({value: {"action": "delete_document", "name": el.parentNode.id}, dataType: 'string'})
+            })
+          })          
+          doc_elements = Array.from(document.getElementsByClassName('document-card')).filter(el => el.id !== 'add_new_document')
+          doc_elements.forEach(el => {
+            el.addEventListener('click', () => {
+              sendDataToPython({value: {"action": "open_document","name": el.id}, dataType: 'string'})
+            })
+          })
+          
+        // Hook things up!
+          window.addEventListener("message", onDataFromPython);
+          init();
+    
+          window.addEventListener("load", function() {
+            window.setTimeout(function() {
+              setFrameHeight(document.documentElement.clientHeight)
+            }, 0);
+          });
+    </script>
+</html>

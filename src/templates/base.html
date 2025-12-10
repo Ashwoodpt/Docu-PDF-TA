@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if embedded_css %}
+        {{ embedded_css | safe }}
+    {% endif %}
+</head>
+<body>
+    <div class="page-container flex-center">
+        <!-- COMPONENT CONTAINER -->
+        <div class="component-container flex-column gap-10">
+            <!-- HEADER COMPONENT -->
+            {% block header %}
+            {% include 'components/header.html' %}
+            {% endblock %}
+            <div class="horizontal-separator"></div>
+            <!-- MAIN CONTENT -->
+            <main class="page-content flex-column">
+                <h3>{{ page_title }}</h3>
+                {% block content %}
+                    {% include 'components/projection.html' %}
+                    {% include 'components/table.html' %}
+                {% endblock %}
+            </main>
+            <div class="horizontal-separator"></div>
+            <!-- FOOTER COMPONENT -->
+            {% block footer %}
+                {% include 'components/footer.html' %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

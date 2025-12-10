@@ -1,0 +1,17 @@
+<div class="loading-overlay" id="loading-overlay" style="display: none;">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <h3 class="loading-text">{{ message | default("Processing...") }}</h3>
+        <p class="loading-subtext">{{ subtext | default("Please wait while we process your request") }}</p>
+    </div>
+</div>
+
+<script>
+function showSpinner() {
+    document.getElementById('loading-overlay').style.display = 'flex';
+}
+
+function hideSpinner() {
+    document.getElementById('loading-overlay').style.display = 'none';
+}
+</script>

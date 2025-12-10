@@ -1,0 +1,1 @@
+.document-grid{display:grid;padding:20px;grid-template-columns:repeat(auto-fill, minmax(275px, 350px));gap:20px}

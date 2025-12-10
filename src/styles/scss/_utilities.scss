@@ -1,0 +1,167 @@
+@use "variables";
+
+// Utility classes
+
+// Flexbox utilities
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-start {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.justify-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.justify-around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.justify-evenly {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.align-center {
+  display: flex;
+  align-items: center;
+}
+
+.align-start {
+  display: flex;
+  align-items: flex-start;
+}
+
+.align-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+// Margin utilities
+.m-0 { margin: 0; }
+.m-5 { margin: variables.$spacing-xs; }
+.m-10 { margin: variables.$spacing-sm; }
+.m-15 { margin: variables.$spacing-md; }
+.m-20 { margin: variables.$spacing-lg; }
+.m-25 { margin: variables.$spacing-xl; }
+.m-30 { margin: variables.$spacing-xxl; }
+
+.mt-0 { margin-top: 0; }
+.mt-5 { margin-top: variables.$spacing-xs; }
+.mt-10 { margin-top: variables.$spacing-sm; }
+.mt-15 { margin-top: variables.$spacing-md; }
+.mt-20 { margin-top: variables.$spacing-lg; }
+.mt-25 { margin-top: variables.$spacing-xl; }
+.mt-30 { margin-top: variables.$spacing-xxl; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-5 { margin-bottom: variables.$spacing-xs; }
+.mb-10 { margin-bottom: variables.$spacing-sm; }
+.mb-15 { margin-bottom: variables.$spacing-md; }
+.mb-20 { margin-bottom: variables.$spacing-lg; }
+.mb-25 { margin-bottom: variables.$spacing-xl; }
+.mb-30 { margin-bottom: variables.$spacing-xxl; }
+
+.ml-0 { margin-left: 0; }
+.ml-5 { margin-left: variables.$spacing-xs; }
+.ml-10 { margin-left: variables.$spacing-sm; }
+.ml-15 { margin-left: variables.$spacing-md; }
+.ml-20 { margin-left: variables.$spacing-lg; }
+.ml-25 { margin-left: variables.$spacing-xl; }
+.ml-30 { margin-left: variables.$spacing-xxl; }
+
+.mr-0 { margin-right: 0; }
+.mr-5 { margin-right: variables.$spacing-xs; }
+.mr-10 { margin-right: variables.$spacing-sm; }
+.mr-15 { margin-right: variables.$spacing-md; }
+.mr-20 { margin-right: variables.$spacing-lg; }
+.mr-25 { margin-right: variables.$spacing-xl; }
+.mr-30 { margin-right: variables.$spacing-xxl; }
+
+// Padding utilities
+.p-0 { padding: 0; }
+.p-5 { padding: variables.$spacing-xs; }
+.p-10 { padding: variables.$spacing-sm; }
+.p-15 { padding: variables.$spacing-md; }
+.p-20 { padding: variables.$spacing-lg; }
+.p-25 { padding: variables.$spacing-xl; }
+.p-30 { padding: variables.$spacing-xxl; }
+
+.pt-0 { padding-top: 0; }
+.pt-5 { padding-top: variables.$spacing-xs; }
+.pt-10 { padding-top: variables.$spacing-sm; }
+.pt-15 { padding-top: variables.$spacing-md; }
+.pt-20 { padding-top: variables.$spacing-lg; }
+.pt-25 { padding-top: variables.$spacing-xl; }
+.pt-30 { padding-top: variables.$spacing-xxl; }
+
+.pb-0 { padding-bottom: 0; }
+.pb-5 { padding-bottom: variables.$spacing-xs; }
+.pb-10 { padding-bottom: variables.$spacing-sm; }
+.pb-15 { padding-bottom: variables.$spacing-md; }
+.pb-20 { padding-bottom: variables.$spacing-lg; }
+.pb-25 { padding-bottom: variables.$spacing-xl; }
+.pb-30 { padding-bottom: variables.$spacing-xxl; }
+
+.pl-0 { padding-left: 0; }
+.pl-5 { padding-left: variables.$spacing-xs; }
+.pl-10 { padding-left: variables.$spacing-sm; }
+.pl-15 { padding-left: variables.$spacing-md; }
+.pl-20 { padding-left: variables.$spacing-lg; }
+.pl-25 { padding-left: variables.$spacing-xl; }
+.pl-30 { padding-left: variables.$spacing-xxl; }
+
+.pr-0 { padding-right: 0; }
+.pr-5 { padding-right: variables.$spacing-xs; }
+.pr-10 { padding-right: variables.$spacing-sm; }
+.pr-15 { padding-right: variables.$spacing-md; }
+.pr-20 { padding-right: variables.$spacing-lg; }
+.pr-25 { padding-right: variables.$spacing-xl; }
+.pr-30 { padding-right: variables.$spacing-xxl; }
+
+// Width and height utilities
+.w-100 { width: 100%; }
+.w-auto { width: auto; }
+.h-100 { height: 100%; }
+.h-auto { height: auto; }
+.max-w-800 { max-width: variables.$max-width-content; }
+
+// Color utilities
+.text-dark { color: variables.$color-secondary; }
+.bg-white { background-color: variables.$color-white; }
+
+// Border utilities
+.border-radius { border-radius: variables.$size-border-radius-md; }
+
+// Gap utilities
+.gap-5 { gap: variables.$spacing-xs; }
+.gap-10 { gap: variables.$spacing-sm; }
+.gap-15 { gap: variables.$spacing-md; }
+.gap-20 { gap: variables.$spacing-lg; }

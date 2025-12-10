@@ -1,0 +1,68 @@
+@use "../variables";
+
+.document-card {
+  width: variables.$doc-card-width;
+  color: variables.$color-white;
+  background-color: variables.$color-dark-bg;
+  padding: variables.$spacing-sm variables.$spacing-xxl;
+  border-radius: variables.$size-border-radius-lg;
+  border: 1px solid rgba(0, 0, 0, 0);
+  cursor: pointer;
+  height: auto;
+  max-height: 529px;
+  transition: all 0.3s ease-in-out;
+
+  h5 {
+    margin: 0;
+    padding: 0;
+  }
+
+  img {
+    border-radius: 15px;
+  }
+
+  &:hover {
+    border: variables.$border-width solid variables.$color-light-gray;
+  }
+}
+
+.new-document-container {
+  width: 100%;
+  height: max-content;
+
+  &:focus {
+    outline: none;
+  }
+
+  button {
+    min-height: variables.$doc-card-height;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: variables.$size-border-radius-lg;
+    background-color: variables.$color-dark-bg;
+    color: variables.$color-white;
+    font-size: 72px;
+    cursor: pointer;
+  }
+}
+
+.delete-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    background-color: variables.$color-black;
+    padding: variables.$spacing-xs variables.$spacing-sm;
+    border: variables.$border-width solid variables.$color-light-gray;
+    border-radius: variables.$size-border-radius-sm;
+    color: variables.$color-white;
+    cursor: pointer;
+    z-index: 10;
+
+    &:hover {
+      background-color: variables.$color-red;
+    }
+  }
+}

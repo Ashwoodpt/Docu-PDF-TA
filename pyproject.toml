@@ -1,0 +1,54 @@
+[project]
+name = "docu-pdf-test"
+version = "0.1.0"
+description = "PDF render and edit app"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "weasyprint>=61.0",
+    "pydantic>=2.5.0",
+    "lxml>=5.0.0",
+    "streamlit>=1.29.0",
+    "pandas>=2.1.0",
+    "pillow>=10.0.0",
+    "structlog>=23.2.0",
+    "python-multipart>=0.0.6", 
+    ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-mock>=3.12.0",
+    "memory-profiler>=0.60.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.5.0",
+    "locust>=2.19.0",  # Load testing
+]
+
+[project.scripts]
+dev = "streamlit run src/streamlit/app.py"
+build-scss = "npm run build:scss"
+build-scss-watch = "npm run build:scss:watch"
+analyze = "python scripts/analyze_data.py"
+calibrate = "python scripts/calibrate.py"
+test = "pytest tests/ -v"
+test-perf = "pytest tests/performance/ --benchmark-only"
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --strict-markers"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "performance: Performance benchmarks",
+]

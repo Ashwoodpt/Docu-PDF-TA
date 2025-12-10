@@ -1,0 +1,10 @@
+<div class="projection-container flex-column">
+    {% for item in views %}
+        <h5>{{ item.side }}</h5>
+        <img src="{{item.image}}" alt="side projection">
+        <div class="sub-images-container justify-between">
+            <img src="{{item.wall_image}}" alt="wall projection">
+            <img src="{{item.pano}}" alt="associated panorama">
+        </div>
+    {% endfor %}
+</div>
