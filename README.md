@@ -213,31 +213,6 @@ This project uses several key dependencies:
 - **Pandas**: Data manipulation
 - **lxml**: XML/SVG processing
 
-## Security Considerations
-
-This application has several security aspects that should be considered before deploying to production:
-
-### 1. Input Validation
-- **File Uploads**: The application accepts SVG, image, JSON, and CSV file uploads. When deploying, ensure proper validation and sanitization of uploaded files to prevent malicious content injection.
-- **SVG Content**: SVG files can contain malicious JavaScript. The application uses `lxml` to generate SVGs programmatically, which is safer than parsing user-provided SVG content directly. However, when accepting SVG uploads, consider implementing SVG sanitization to prevent XSS attacks.
-- **File Uploads**: The application accepts SVG, image, JSON, and CSV file uploads. When deploying, ensure proper validation and sanitization of uploaded files to prevent malicious content injection.
-- **SVG Content**: SVG files can contain malicious JavaScript. Consider using an SVG sanitizer when processing user-uploaded SVGs.
-
-### 2. Environment Configuration
-- **Redis Connection**: The Redis URL is configurable via the `REDIS_URL` environment variable. Never hardcode credentials in the source code.
-- **Default Redis URL**: The application defaults to connecting to Redis at `redis://localhost:6379` if no environment variable is set.
-
-### 3. Asset Storage
-- **Temporary Files**: The application creates temporary asset files in the `temp_assets/` directory. Ensure this directory has proper permissions and is cleaned regularly.
-- **Asset URLs**: Assets are served as data URLs or file paths. Be cautious about serving user-generated content directly.
-
-### 4. Session State
-- **Streamlit Session State**: The application relies heavily on Streamlit's session state for managing user data. Ensure proper session management when deploying.
-
-### 5. Dependencies
-- Keep all dependencies updated to address known vulnerabilities.
-- Regularly audit dependencies using tools like `pip-audit` or `uv audit`.
-
 ## Troubleshooting
 
 ### Common issues:
