@@ -112,6 +112,8 @@ def init_state() -> None:
         st.session_state.pending_table = None
     if "pending_changes" not in st.session_state:
         st.session_state.pending_changes = {}
+    if "isSaveOnExit" not in st.session_state:
+        st.session_state.isSaveOnExit = True
 
 
 

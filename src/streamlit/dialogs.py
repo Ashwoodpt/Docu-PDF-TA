@@ -3,8 +3,9 @@ import streamlit as st
 import json
 from src.models.enums import AvailableTemplates
 from streamlit_image_select import image_select
-from src.streamlit.processing import create_page_from_uploaded_data,generate_svg_from_json
+from src.streamlit.processing import create_page_from_uploaded_data,process_table,generate_svg_from_json
 from lxml import etree
+import pandas as pd
 @st.dialog("New page",dismissible=False)
 def new_page_dialog():
     st.session_state.wizard_step = 0
@@ -82,7 +83,7 @@ def upload_files_dialog(template: AvailableTemplates):
                         st.image(svg_string, "Preview", width=400)
                 if side is not None and image is not None and panorama is not None and wall_data and svg_element is not None:
                     # Store the SVG string (not the element) for processing in create_page_from_uploaded_data
-                    svg_string = etree.tostring(svg_element, encoding="unicode", method="xml").strip() if svg_element is not None else ""
+                    svg_string = etree.tostring(svg_element, encoding="unicode", method="xml").strip() if svg_string is not None else ""
                     st.session_state.new_page["view"] = {"side": side, "image": image, "panorama": panorama, "wall_data": wall_json, "wall_image_svg": svg_string}
 
             with upload_table_tab:
@@ -93,9 +94,12 @@ def upload_files_dialog(template: AvailableTemplates):
                     key="upload_table"
                 )
                 if table:
-                    st.session_state.new_page["table"] = table
-
-            isValid = side and image and panorama and table
+                    csv = pd.read_csv(table)
+                    csv = process_table(csv)
+                    new_edited = st.data_editor(csv,num_rows="dynamic",key="uploaded_table_editor")
+                    edited_df = pd.DataFrame(new_edited)
+                    st.session_state.new_page["table"] = edited_df
+            isValid = side and wall_data and image and panorama and table
             if st.button("Back", use_container_width=True):
                 st.session_state.wizard_step = 1
                 st.rerun()
@@ -113,7 +117,7 @@ def upload_files_dialog(template: AvailableTemplates):
                 st.rerun()
 
 @st.dialog("Confirm dialog",dismissible=False)
-def confirm_dialog(message, on_confirm, on_cancel):
+def confirm_dialog(message, on_confirm, on_cancel = lambda: st.rerun()):
     st.write(message)
     col1, col2,col3 = st.columns(3)
     with col1:

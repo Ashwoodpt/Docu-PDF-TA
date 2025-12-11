@@ -1,9 +1,8 @@
 @use "../variables";
 
 .header-container {
-   padding: variables.$spacing-md 0;
-   color: variables.$color-black;
-  
+  padding: variables.$spacing-md 0;
+  color: variables.$color-black;
   svg {
     width: 200px;
     height: 30px;

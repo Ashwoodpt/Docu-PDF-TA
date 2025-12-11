@@ -1,7 +1,8 @@
 @use '_utilities';
-@use './components/header.scss';
+@use './components/header';
 @use './components/footer';
 @use './components/projection';
 @use './components/table';
 @use './components/document_card';
 @use './components/document_grid';
+@use './components/page_list';

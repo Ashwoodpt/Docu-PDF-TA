@@ -15,6 +15,16 @@ def edit_page() -> None:
     """
     page = st.session_state.document.pages[st.session_state.current_page_index]
     pending_view = page.views[0].copy()
+    
+    with st.container():
+        current_title = st.session_state.document.pages[st.session_state.current_page_index].page_title
+        new_title = st.text_input("Page Title", value=current_title, key="page_title_input")
+        
+        if new_title != current_title:
+            st.session_state.pending_changes["page_title"] = new_title
+        elif "page_title" in st.session_state.pending_changes:
+            del st.session_state.pending_changes["page_title"]
+    
     st.space(12)
     if pending_view is not None:
         with st.container(horizontal=True,vertical_alignment="center"):

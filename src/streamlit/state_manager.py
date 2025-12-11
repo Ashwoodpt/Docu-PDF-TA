@@ -47,3 +47,6 @@ def get_document_list() -> list:
 def update_document_list():
     st.session_state.document_list = get_document_list()
     st.rerun()
+
+def toggle_save_on_exit():
+    st.session_state.isSaveOnExit = not st.session_state.isSaveOnExit

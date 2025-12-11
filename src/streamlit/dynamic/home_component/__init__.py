@@ -1,12 +1,11 @@
 from streamlit.components.v1 import components
-from typing import Any, Optional, List, Dict, Union
+from typing import Any, Optional, Dict
 import json
 from src.render.template_engine import TemplateEngine
-from pathlib import Path
 
 homecomponent = components.declare_component(
     "homecomponent",
-    path="./src/streamlit/dynamic/homecomponent",
+    path="./src/streamlit/dynamic/home_component",
 )
 
 def render_home_component(
@@ -17,7 +16,7 @@ def render_home_component(
 ) -> Optional[Dict[str, Any]]:
     rendered_html = engine.render(template_name="home.html", context=context)
 
-    component_value = homecomponent(html = rendered_html, key=key, events=events, context=context)
+    component_value = homecomponent(html = rendered_html, key=key, events=events)
 
     if events and component_value:
         try:

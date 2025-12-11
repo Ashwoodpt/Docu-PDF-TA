@@ -87,6 +87,22 @@ class Document(BaseModel):
         self.updated_at = datetime.now().isoformat()
         return self
 
+    def delete_page(self, page_index: int):
+        """Delete a page from the document by index and update page numbers."""
+        if 0 <= page_index <= len(self.pages):
+            new_pages = self.pages.copy()
+            del new_pages[page_index]
+            # Update page numbers for remaining pages
+            for i in range(len(new_pages)):
+                new_pages[i].page_number = i + 1
+            
+            self.shared_context.total_pages = len(self.pages)
+            self.updated_at = datetime.now().isoformat()
+            self.pages = new_pages
+        else:
+            raise IndexError(f"Page index {page_index} is out of range. Document has {len(self.pages)} pages.")
+        return self
+
     def update_shared_context(self, **kwargs):
         """Update shared context values."""
         for key, value in kwargs.items():

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     {% if embedded_css %}
         {{ embedded_css | safe }}
     {% endif %}
@@ -10,14 +10,14 @@
     <div class="page-container flex-center">
         <!-- COMPONENT CONTAINER -->
         <div class="component-container flex-column gap-10">
-            <!-- HEADER COMPONENT -->
             {% block header %}
             {% include 'components/header.html' %}
             {% endblock %}
+            <!-- HEADER COMPONENT -->
             <div class="horizontal-separator"></div>
             <!-- MAIN CONTENT -->
-            <main class="page-content flex-column">
-                <h3>{{ page_title }}</h3>
+            <h3>{{ page_title }}</h3>
+            <main class="page-content flex-column gap-20">
                 {% block content %}
                     {% include 'components/projection.html' %}
                     {% include 'components/table.html' %}

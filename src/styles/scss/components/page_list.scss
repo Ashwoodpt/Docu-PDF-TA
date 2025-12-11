@@ -1,0 +1,48 @@
+@use "../variables";
+
+.page-list-container {
+    color: variables.$color-white;
+    .page-card {
+        border-radius:variables.$size-border-radius-lg;
+        border: 1px solid transparent;
+        width: variables.$page-card-width;
+        background-color: variables.$color-semi-transparent;
+        transition: all 0.3s ease-in-out;
+
+        &:hover {
+        border: 1px solid variables.$color-red;
+        .delete-button-container {
+            opacity: 1;
+        }
+
+        
+    }
+    }
+    .preview-container {
+        position: relative;
+        padding: variables.$spacing-sm;
+        border-radius: variables.$size-border-radius-lg;
+        
+        img {
+            border-radius: variables.$size-border-radius-sm;
+        }
+    }
+    padding: variables.$spacing-sm;
+    cursor: pointer;
+    
+    .delete-button-container {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        opacity: 0;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .page-index {
+        font-size: variables.$font-size-loading-subtext;
+    }
+}
+
+.active {
+    border: 1px solid variables.$color-red !important;
+}

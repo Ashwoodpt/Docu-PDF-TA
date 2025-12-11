@@ -29,6 +29,9 @@ if CSS_PATH.exists():
 else:
     embedded_css = '<style>/* CSS file not found */</style>'
 
+# Initialize template engine
+template_engine = TemplateEngine(TEMPLATES_PATH)
+
 def _save_file_to_asset_manager(file_obj, asset_prefix: str, asset_type: AssetType = None):
     """
     Helper function to save a file to the asset manager and return the URL.
@@ -101,18 +104,13 @@ def create_page_from_uploaded_data() -> None:
 
     # Process the table data
     table_data = None
-    if table_data_file:
-        # Read CSV content
-        df = pd.read_csv(table_data_file)
-        df = process_table(df)
-
-        headers = list(df.columns)
-        # Convert DataFrame to list of dictionaries
-        data_records = df.to_dict('records')
-        table_data = TableData(
-            headers=headers,
-            data=data_records
-        )
+    data_records = table_data_file.to_dict('records')
+    headers = list(table_data_file.columns)
+    # Convert DataFrame to list of dictionaries
+    table_data = TableData(
+        headers=headers,
+        data=data_records
+    )
 
     # Create the page context
     page_context = PageContext(
@@ -257,7 +255,6 @@ def delete_document(document_name: str) -> bool:
             st.session_state.document = None
             st.session_state.current_page_index = 0
         
-        st.success(f"Document '{document_name.split('documents:')[1][:-5]}' deleted successfully!")
         update_document_list()
         return True
 
@@ -369,6 +366,8 @@ def update_page_from_edits() -> None:
                 page.table_data = value
             case "view":
                 page.views[0] = value
+            case "page_title":
+                page.page_title = value
             case _:
                 pass
 
@@ -390,3 +389,21 @@ def update_page_from_edits() -> None:
     st.session_state.show_confirm_success = True
     st.session_state.success_message = f"Page updated successfully!"
     st.session_state.isEditing = False
+
+def delete_page(page_index: int) -> None:
+    """
+    Delete a page from the document at the specified index.
+    
+    Args:
+        page_index: Index of the page to delete
+    """
+    current_page = st.session_state.current_page_index
+    if page_index == 0 and len(st.session_state.document.pages) == 1:
+        st.toast("Cannot delete last page, maybe you wanted to delete the document?", icon="⚠️")
+        return
+    if current_page >= page_index:
+        st.session_state.current_page_index -= 1
+    st.session_state.document = st.session_state.document.delete_page(page_index)
+    st.session_state.show_confirm_success = True
+    st.session_state.success_message = f"Page deleted successfully!"
+    st.rerun()

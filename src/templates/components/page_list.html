@@ -1,0 +1,29 @@
+<html>
+    {% if embedded_css %}
+        {{ embedded_css | safe }}
+    {% endif %}
+    <body>
+        <div class="page-list-container flex-column gap-20">
+            {% if pages %}
+            {% for page in pages %}
+                <div id="page:{{ page.page_number }}" class="page-card flex-column flex-center gap-5 {{'active' if page.page_number == active_page}}">
+                    <div class="preview-container flex-center p-5">
+                        <img src="{{ page.preview_url }}" alt="preview">
+                        <div id="delete:{{ page.page_number }}" class="delete-button-container">
+                            <button>Delete</button>
+                        </div>
+                    </div>
+                    <div class="page-info flex-column pb-10">
+                        <div class="page-title">
+                            <h5>{{ page.page_title }}</h5>
+                        </div>
+                        <div class="page-index flex-center">
+                            <span>{{ page.page_number }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </body>
+</html>

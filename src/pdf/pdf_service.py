@@ -86,11 +86,11 @@ class PDFService:
         """
         pdf_bytes, preview = self.generate_page_pdf(page_context, shared_context, page_index)
         # Save to disk for testing
-        test_dir = Path(__file__).parent / "test_pdfs"
-        test_dir.mkdir(parents=True, exist_ok=True)
-        test_pdf_path = test_dir / f"page_{page_index + 1}_{page_context.page_title.replace(' ', '_')}.pdf"
-        with open(test_pdf_path, "wb") as f:
-            f.write(pdf_bytes)
+        # test_dir = Path(__file__).parent / "test_pdfs"
+        # test_dir.mkdir(parents=True, exist_ok=True)
+        # test_pdf_path = test_dir / f"page_{page_index + 1}_{page_context.page_title.replace(' ', '_')}.pdf"
+        # with open(test_pdf_path, "wb") as f:
+        #     f.write(pdf_bytes)
 
         # Generate a unique name for the PDF
         pdf_asset_name = f"page_{page_index + 1}_{page_context.page_title.replace(' ', '_')}.pdf"

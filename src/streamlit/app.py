@@ -1,14 +1,13 @@
 import streamlit as st
 from pathlib import Path
 from src.render.template_engine import TemplateEngine
-from uuid import uuid4
 
 from src.streamlit.dialogs import upload_files_dialog, new_page_dialog
 from src.streamlit.processing import load_document,delete_document
 from src.streamlit.session_state import init_state
 from src.streamlit.sidebar import sidebar
 from src.streamlit.edit_page import edit_page
-from src.streamlit.dynamic.homecomponent import render_home_component
+from src.streamlit.dynamic.home_component import render_home_component
 
 import pandas as pd
 
@@ -26,7 +25,7 @@ st.set_page_config(page_title = "PDF RENDER",layout = "wide")
 # Check Redis connection status
 init_state()
 
-sidebar()
+sidebar(embedded_css=embedded_css)
 
 match st.session_state.get("wizard_step", 0):
     case 0:
