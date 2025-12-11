@@ -51,7 +51,6 @@ class PDFService:
             "views": views_for_template,
             "table_data": table_data_for_template,
         }
-
         # Render the HTML using the base template
         rendered_html = self.template_engine.render("base.html", context)
 
@@ -69,6 +68,7 @@ class PDFService:
         except Exception as e:
             # If WeasyPrint fails, return an empty PDF or basic content
             # This is a fallback when system libraries are not available
+            print(e)
             return b'%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids [3 0 R]\n/Count 1\n>>\nendobj\n3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 612 792]\n/Contents 4 0 R\n>>\nendobj\n4 0 obj\n<<\n/Length 44\n>>\nstream\nBT\n/F1 24 Tf\n100 700 Td\n(PDF Generation Error) Tj\nET\nendstream\nendobj\n5 0 obj\n<<\n/Type /Font\n/Subtype /Type1\n/BaseFont /Helvetica\n>>\nendobj\nxref\n0 6\n0000000000 65535 f \n0000000010 00000 n \n0000000101 00000 n \n0000000242 00000 n \n0000000418 00000 n \n0000000503 00000 n \ntrailer\n<<\n/Size 6\n/Root 1 0 R\n>>\nstartxref\n581\n%%EOF', b''
 
     def save_page_pdf(self, page_context: PageContext, shared_context: SharedContext, page_index: int) -> tuple:
@@ -85,12 +85,12 @@ class PDFService:
             tuple: (pdf_url, preview_url) for the saved PDF
         """
         pdf_bytes, preview = self.generate_page_pdf(page_context, shared_context, page_index)
-        # # Save to disk for testing
-        # test_dir = Path(__file__).parent / "test_pdfs"
-        # test_dir.mkdir(parents=True, exist_ok=True)
-        # test_pdf_path = test_dir / f"page_{page_index + 1}_{page_context.page_title.replace(' ', '_')}.pdf"
-        # with open(test_pdf_path, "wb") as f:
-        #     f.write(pdf_bytes)
+        # Save to disk for testing
+        test_dir = Path(__file__).parent / "test_pdfs"
+        test_dir.mkdir(parents=True, exist_ok=True)
+        test_pdf_path = test_dir / f"page_{page_index + 1}_{page_context.page_title.replace(' ', '_')}.pdf"
+        with open(test_pdf_path, "wb") as f:
+            f.write(pdf_bytes)
 
         # Generate a unique name for the PDF
         pdf_asset_name = f"page_{page_index + 1}_{page_context.page_title.replace(' ', '_')}.pdf"

@@ -101,6 +101,8 @@ def upload_files_dialog(template: AvailableTemplates):
                 st.rerun()
             if st.button("Cancel", use_container_width=True):
                 st.session_state.wizard_step = 0
+                st.session_state.current_action = ""
+
                 st.rerun()
             if st.button("Create", use_container_width=True, disabled=not isValid,type="primary",shortcut="Enter"):
                 # Create the page with uploaded data and save to backend
@@ -121,3 +123,4 @@ def confirm_dialog(message, on_confirm, on_cancel):
         if st.button("Cancel", key="cancel", on_click=on_cancel, shortcut="Escape"):
             st.rerun()
     return True
+

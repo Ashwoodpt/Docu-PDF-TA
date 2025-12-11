@@ -2,6 +2,7 @@ import streamlit as st
 from src.streamlit.dialogs import new_page_dialog,confirm_dialog
 from src.streamlit.processing import save_document
 from st_clickable_images import clickable_images
+from src.streamlit.state_manager import update_document_list
 def sidebar() -> None:
     """
     Render the sidebar UI component in the Streamlit application.
@@ -26,7 +27,8 @@ def sidebar() -> None:
                     save_document()
                     st.session_state.isEditing = False
                     st.session_state.document = None
-                confirm_dialog("Save changes?", on_confirm=lambda: save_and_back(), on_cancel=None)
+                    update_document_list()
+                confirm_dialog("Save changes?", on_confirm=save_and_back, on_cancel=None)
 
 
         st.divider()

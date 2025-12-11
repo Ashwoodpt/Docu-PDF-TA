@@ -14,10 +14,11 @@ dependencies = [
     "structlog>=23.2.0",
     "python-multipart>=0.0.6",
     "streamlit-image-select>=0.6.0",
-    "PyMuPDF>=1.23.13",
     "shapely>=2.1.2",
     "redis>=7.1.0",
     "st-clickable-images>=0.0.3",
+    "fitz>=0.0.1.dev2",
+    "pymupdf>=1.26.6",
 ]
 
 [project.optional-dependencies]

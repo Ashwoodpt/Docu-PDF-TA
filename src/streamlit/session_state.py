@@ -1,7 +1,8 @@
 import streamlit as st
 from src.core.asset_factory import create_asset_manager, BackendType
 from src.core.asset_manager import AssetType
-from src.streamlit.processing import format_datetime
+from src.streamlit.state_manager import format_datetime
+from src.streamlit.state_manager import update_document_list
 from pathlib import Path
 import json
 
@@ -80,24 +81,7 @@ def init_state() -> None:
         st.session_state.logo_urls = initialize_logos()
 
     if "document_list" not in st.session_state:
-        st.session_state.document_list = []
-        files = st.session_state.asset_manager.list(AssetType.JSON)
-        documents = [f for f in files if f.endswith('.json') and f.startswith('json:documents:')]
-        for document in documents:
-            try:
-                doc_bytes = st.session_state.asset_manager.get(document.split("json:")[1], AssetType.JSON)
-                doc_data = doc_bytes.decode('utf-8')
-                doc_json = json.loads(doc_data)
-
-                doc_info = {
-                    "name": doc_json.get("name", ""),
-                    "updated_at": format_datetime(doc_json.get("updated_at", "")),
-                    "preview": doc_json.get("pages")[0].get("preview_url", ""),
-                    "page_count": len(doc_json.get("pages", [1]))
-                }
-                st.session_state.document_list.append(doc_info)
-            except Exception as e:
-                print(e)
+        update_document_list()
 
 
     # Initialize logos and store in session state (only if not already done)
@@ -136,3 +120,4 @@ def init_state() -> None:
         st.toast(message,duration=3, icon="✅")
         st.session_state.show_confirm_success = False
         st.session_state.success_message = ''
+

@@ -8,7 +8,8 @@ from src.streamlit.processing import load_document,delete_document
 from src.streamlit.session_state import init_state
 from src.streamlit.sidebar import sidebar
 from src.streamlit.edit_page import edit_page
-from src.models.context_model import Document
+from src.streamlit.dynamic.homecomponent import render_home_component
+
 import pandas as pd
 
 # Initialize global embedded CSS
@@ -50,24 +51,24 @@ def render_current_page():
                 "embedded_css": embedded_css,
                 "documents": st.session_state.document_list
             }
-            engine.render_to_file("home.html", context, Path(__file__).parent / "dynamic" / "index.html")
-            from src.streamlit.dynamic import homecomponent
-            document_clicked = homecomponent()
-            if document_clicked is None:
-                return
-            match document_clicked["action"]:
-                case None:
-                    return
-                case "add_new_document":
-                    st.session_state.wizard_step = 1
-                    st.rerun()
-                case "delete_document":
-                    name = document_clicked["name"].split('delete:')[1]
-                    delete_document(name)
-                case _:
-                    load_document(document_clicked["name"])
-            # rendered_html = engine.render("home.html", context)
-            # # st.markdown(rendered_html, unsafe_allow_html=True)
+            home_event = render_home_component(
+                engine=engine,
+                context=context,
+                key=f"home_component{hash(str(context['documents']))}",
+                events=True
+            )
+            if home_event:
+                action = home_event.get("action",'')
+            
+                match action:
+                    case "add_new_document":
+                        st.session_state.wizard_step = 1
+                    case "delete_document":
+                        delete_document(home_event.get("name"))
+                    case "open_document":
+                        load_document(home_event.get("name"))
+                    case _:
+                        return
         except Exception as e:
             st.error(f"Error rendering template: {e}")
             st.warning("Displaying fallback content...")

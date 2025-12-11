@@ -5,8 +5,8 @@ from src.pdf.pdf_service import PDFService
 from uuid import uuid4
 from src.models.context_model import Document, PageContext, SharedContext, View, ViewType, TableData
 from src.core.asset_manager import AssetManager, AssetType
+from src.streamlit.state_manager import update_document_list
 import json
-import datetime
 from src.svg.wall_processor import generate_wall_projection_svg
 
 from src.render.template_engine import TemplateEngine
@@ -28,20 +28,6 @@ if CSS_PATH.exists():
     embedded_css = f'<style>{css_content}</style>'
 else:
     embedded_css = '<style>/* CSS file not found */</style>'
-
-def format_datetime(value: str, format_string: str = "%Y-%m-%d %H:%M") -> str:
-    """
-    Format a datetime string to a specified format.
-    
-    Args:
-        value: ISO format datetime string
-        format_string: Format string for output (default: "%Y-%m-%d %H:%M")
-        
-    Returns:
-        Formatted datetime string
-    """
-    dt_object = datetime.datetime.fromisoformat(value)
-    return dt_object.strftime(format_string)
 
 def _save_file_to_asset_manager(file_obj, asset_prefix: str, asset_type: AssetType = None):
     """
@@ -270,8 +256,9 @@ def delete_document(document_name: str) -> bool:
             f"documents:{st.session_state.document.name}.json" == document_name):
             st.session_state.document = None
             st.session_state.current_page_index = 0
-
+        
         st.success(f"Document '{document_name.split('documents:')[1][:-5]}' deleted successfully!")
+        update_document_list()
         return True
 
     except Exception as e:

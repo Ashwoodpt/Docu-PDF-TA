@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <div id="home-injection"></div>
+</body>
+<script>
+        // Streamlit communication functions
+        function sendMessageToStreamlitClient(type, data) {
+            const outData = Object.assign({
+                isStreamlitMessage: true,
+                type: type,
+            }, data);
+            window.parent.postMessage(outData, "*");
+        }
+
+        function init() {
+            sendMessageToStreamlitClient("streamlit:componentReady", {apiVersion: 1});
+        }
+
+        function setFrameHeight(height) {
+            sendMessageToStreamlitClient("streamlit:setFrameHeight", {height: height});
+        }
+
+        function sendDataToPython(data) {
+            sendMessageToStreamlitClient("streamlit:setComponentValue", data);
+        }
+
+        // Component logic
+        const container = document.getElementById('home-injection');
+        let eventHandlersAttached = false;
+
+        function onDataFromPython(event) {
+            if (event.data.type !== "streamlit:render") return;
+
+            const args = event.data.args
+
+            if (args.html !== undefined) {
+                container.innerHTML = args.html
+
+                setupEventListeners();
+
+                updateHeight()
+            }
+
+        }
+        const setupEventListeners = () => {
+            removeEventListeners();
+
+            const add_button = document.getElementById('add_new_document');
+            if (add_button) {
+                add_button.addEventListener('click', handleAddButtonClicked);
+            }
+
+            const delete_buttons = Array.from(document.getElementsByClassName('delete-button-container')).map(el => Array.from(el.getElementsByTagName('button'))).flat();
+            delete_buttons.forEach(el => {
+                el.addEventListener('click', handleDeleteButtonClicked)
+            })
+
+            const doc_elements = Array.from(document.getElementsByClassName('document-card')).filter(el => el.id !== 'add_new_document')
+            doc_elements.forEach(el => {
+                el.addEventListener('click', handleDocumentCardClicked)
+            })
+
+            eventHandlersAttached = true;
+        }
+
+        const removeEventListeners = () => {
+            if (eventHandlersAttached) {
+                const add_button = document.getElementById('add_new_document');
+                if (add_button) {
+                    add_button.removeEventListener('click', handleAddButtonClicked)
+                }
+
+                const delete_buttons = Array.from(document.getElementsByClassName('delete-button-container')).map(el => Array.from(el.getElementsByTagName('button'))).flat();
+                delete_buttons.forEach(el => {
+                    el.removeEventListener('click', handleDeleteButtonClicked)
+                })
+
+                const doc_elements = Array.from(document.getElementsByClassName('document-card')).filter(el => el.id !== 'add_new_document')
+                doc_elements.forEach(el => {
+                    el.removeEventListener('click', handleDocumentCardClicked)
+                })
+            }
+        }
+
+        const handleAddButtonClicked = () => {
+            sendDataToPython({value: JSON.stringify({"action": "add_new_document"}), dataType: 'string'})
+        }
+        
+        const handleDeleteButtonClicked = (event) => {
+            event.stopPropagation()
+            const button = event.currentTarget;
+            sendDataToPython({value: JSON.stringify({"action": "delete_document", "name": button.parentNode.id.split('delete:')[1]}), dataType: 'string'})
+        }
+
+        const handleDocumentCardClicked = (event) => {
+            const card = event.currentTarget;
+            sendDataToPython({value: JSON.stringify({"action": "open_document", "name": card.id}), dataType: 'string'})
+        }
+
+        const updateHeight = () => {
+            const height = Math.max(
+                container.scrollHeight,
+                container.offsetHeight,
+                container.clientHeight
+            );
+            // Add some padding (adjust as needed)
+            setFrameHeight(height + 20);
+        }
+
+        // Initialization
+
+        window.addEventListener("message", onDataFromPython);
+        
+        init();
+
+        window.addEventListener("load", function() {
+            setTimeout(updateHeight, 100);
+        });
+
+        window.addEventListener("resize", updateHeight);
+
+        const observer = new MutationObserver(function(mutations) {
+            updateHeight();
+            // If content changed, reattach event listeners
+            if (mutations.some(m => m.type === 'childList')) {
+                setupEventListeners();
+            }
+        });
+
+        observer.observe(container, {
+            childList: true,
+            subtree: true,
+            attributes: false,
+            characterData: false
+        });
+</script>
+</html>
