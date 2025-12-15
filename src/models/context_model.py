@@ -17,11 +17,36 @@ class View(BaseModel):
     pano: str  # Path to panorama image
     wall_data: Optional[Dict[str, Any]] = None  # Wall data as dictionary
 
+    def __eq__(self, other):
+        if not isinstance(other, View):
+            return False
+        return (
+            self.side == other.side and
+            self.image == other.image and
+            self.wall_image == other.wall_image and
+            self.pano == other.pano and
+            self.wall_data == other.wall_data
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
 
 
 class TableData(BaseModel):
     headers: List[str]
     data: List[Dict[str, Any]]  # List of dictionaries representing rows
+
+    def __eq__(self, other):
+        if not isinstance(other, TableData):
+            return False
+        return (
+            self.headers == other.headers and
+            self.data == other.data
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class PageContext(BaseModel):
@@ -35,7 +60,6 @@ class PageContext(BaseModel):
     # Page-specific data
     views: List[View] = Field(default_factory=list)
     table_data: Optional[TableData] = None
-    components: List[Component] = Field(default_factory=list)  # Added components list
 
     # PDF and preview URLs
     pdf_url: Optional[str] = None
@@ -95,7 +119,7 @@ class Document(BaseModel):
             # Update page numbers for remaining pages
             for i in range(len(new_pages)):
                 new_pages[i].page_number = i + 1
-            
+
             self.shared_context.total_pages = len(self.pages)
             self.updated_at = datetime.now().isoformat()
             self.pages = new_pages
@@ -112,10 +136,25 @@ class Document(BaseModel):
         return self
 
     def to_dict(self):
+        """
+        Convert the Document instance to a dictionary representation.
+        
+        Returns:
+            dict: Dictionary representation of the Document
+        """
         return self.model_dump()
 
     @classmethod
     def from_dict(cls, data):
+        """
+        Create a Document instance from a dictionary.
+        
+        Args:
+            data (dict): Dictionary containing document data
+            
+        Returns:
+            Document: A new Document instance
+        """
         return cls(**data)
 
     @classmethod

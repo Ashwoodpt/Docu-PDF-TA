@@ -19,4 +19,3 @@ class ComponentType(Enum):
 
 class AvailableTemplates(Enum):
     BASE = "base"
-    EXTRA = "extra"

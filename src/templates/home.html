@@ -9,7 +9,7 @@
                 {% for document in documents %}
                 <div class="card-container flex-column gap-10 m-10 mt-0">
                   <div id="documents:{{document.name}}.json" class="document-card flex-center flex-column align-start gap-10">
-                      <h5>{{ document.name }}</h4>
+                      <h4>{{ document.name }}</h4>
                       <img src="{{ document.preview }}" alt="fail">
                       <div class="document-info flex-column">
                           <span>modified at: {{ document.updated_at }}</span>

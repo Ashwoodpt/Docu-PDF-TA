@@ -1,5 +1,4 @@
-from typing import Protocol,runtime_checkable,Optional
-from pathlib import Path
+from typing import Protocol, runtime_checkable
 from enum import Enum
 
 class AssetType(Enum):
@@ -32,4 +31,7 @@ class AssetManager(Protocol):
         raise NotImplementedError
     
     def get_public_url(self, name: str, asset_type: AssetType) -> str:
+        raise NotImplementedError
+    
+    def health_check(self) -> bool:
         raise NotImplementedError

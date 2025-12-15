@@ -113,7 +113,16 @@ def _normal_to_direction(normal: np.ndarray) -> str:
 
 
 def calculate_viewbox(walls: List[List[Tuple[float, float]]], padding: int = 50) -> dict:
-    """Calculate the SVG viewbox based on all wall coordinates."""
+    """
+    Calculate the SVG viewbox based on all wall coordinates.
+    
+    Args:
+        walls: A list of walls, where each wall is a list of (x, y) coordinate tuples
+        padding: Additional padding to add around the viewbox (default: 50)
+        
+    Returns:
+        dict: A dictionary containing the viewbox dimensions and center point
+    """
     all_x = []
     all_y = []
 

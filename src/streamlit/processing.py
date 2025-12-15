@@ -5,11 +5,10 @@ from src.pdf.pdf_service import PDFService
 from uuid import uuid4
 from src.models.context_model import Document, PageContext, SharedContext, View, ViewType, TableData
 from src.core.asset_manager import AssetManager, AssetType
-from src.streamlit.state_manager import update_document_list
 import json
 from src.svg.wall_processor import generate_wall_projection_svg
-
-from src.render.template_engine import TemplateEngine
+from src.streamlit.state_manager import state_manager
+from src.render.template_engine import engine
 from pathlib import Path
 
 # Constants
@@ -19,52 +18,42 @@ CSS_PATH = STATIC_PATH / "css" / "main.css"
 DEFAULT_ADDRESS = "127 Example Street, Example City, CA 12345"
 DOCUMENT_PREFIX = "documents:"
 
-# Initialize template engine
-template_engine = TemplateEngine(TEMPLATES_PATH)
+css = state_manager.get_embedded_css()
 
-# Load embedded CSS
-if CSS_PATH.exists():
-    css_content = CSS_PATH.read_text(encoding='utf-8')
-    embedded_css = f'<style>{css_content}</style>'
-else:
-    embedded_css = '<style>/* CSS file not found */</style>'
-
-# Initialize template engine
-template_engine = TemplateEngine(TEMPLATES_PATH)
 
 def _save_file_to_asset_manager(file_obj, asset_prefix: str, asset_type: AssetType = None):
     """
     Helper function to save a file to the asset manager and return the URL.
-    
+
     Args:
         file_obj: File object to save
         asset_prefix: Prefix for the asset name
         asset_type: Asset type, will be inferred if not provided
-    
+
     Returns:
         URL of the saved asset
     """
     if not file_obj:
         return ""
-    
-    asset_manager = st.session_state.asset_manager
-    
+
+    asset_manager = state_manager.asset_manager
+
     if asset_type is None:
         file_extension = file_obj.name.split('.')[-1].lower() if hasattr(file_obj, 'name') else 'svg'
         asset_type = AssetType.SVG if file_extension == 'svg' else AssetType.IMG
     else:
         file_extension = 'svg' if asset_type == AssetType.SVG else 'img'
-    
+
     asset_name = f"{asset_prefix}_{str(uuid4())}.{file_extension}"
     asset_content = file_obj.read()
-    
+
     # Reset file pointer after reading
     if hasattr(file_obj, 'seek'):
         file_obj.seek(0)
-    
+
     asset_manager.save(asset_name, asset_content, asset_type)
     asset_url = asset_manager.get_public_url(asset_name, asset_type)
-    
+
     return asset_url
 
 def create_page_from_uploaded_data() -> None:
@@ -73,10 +62,14 @@ def create_page_from_uploaded_data() -> None:
     This function processes uploaded images, panorama, wall data, and table data
     to create a new page context and add it to the document.
     """
+    new_page_state = state_manager.get_new_page_data()
+    asset_manager = state_manager.asset_manager
+    document_state = state_manager.document_state
     # Get the uploaded data from new_page session state
-    title = st.session_state.new_page.get("title", "New Page")
-    view_data = st.session_state.new_page.get("view", {})
-    table_data_file = st.session_state.new_page.get("table")
+    title = new_page_state.title
+    view_data = new_page_state.view[0]
+    table_data_file = new_page_state.table
+    logos = state_manager.app_state.logo_urls
 
     # Process the view data
     side = view_data.get("side", "Back")
@@ -93,7 +86,7 @@ def create_page_from_uploaded_data() -> None:
     # Process wall image SVG - save it to asset manager and get URL
     wall_image_url = ""
     if wall_image_svg:
-        asset_manager = st.session_state.asset_manager
+        asset_manager = asset_manager
         wall_asset_name = f"wall_{str(uuid4())}.svg"
         asset_manager.save(wall_asset_name, wall_image_svg.encode('utf-8'), AssetType.SVG)
         wall_image_url = asset_manager.get_public_url(wall_asset_name, AssetType.SVG)
@@ -128,148 +121,82 @@ def create_page_from_uploaded_data() -> None:
     )
 
     # Add to document or create a new document if none exists
-    if st.session_state.document is None:
+    if document_state.document is None:
         # Create a new document
         shared_context = SharedContext(
-            document_name=st.session_state.get("new_document_name", "New Document"),
+            document_name=document_state.new_document_name,
             document_id=hex(uuid4().int)[0:8],
             address_line=DEFAULT_ADDRESS,
-            powered_by_logo_url=st.session_state.logo_urls['powered_by'],
-            header_logo_url=st.session_state.logo_urls['header'],
-            embedded_css=embedded_css
+            powered_by_logo_url=logos['powered_by'],
+            header_logo_url=logos['header'],
+            embedded_css=css
         )
 
         document = Document(
-            name=st.session_state.new_document_name,
+            name=document_state.new_document_name,
             shared_context=shared_context
         )
         document.add_page(page_context)
-        st.session_state.document = document
-        st.session_state.current_page_index = 0
+        state_manager.set_current_document(document)
+        state_manager.set_current_page_index(0)
     else:
-        st.session_state.document.add_page(page_context)
-        st.session_state.current_page_index = len(st.session_state.document.pages) - 1
+        document = state_manager.get_current_document()
+        document = document.add_page(page_context)
+        shared_context = document.shared_context  # Get the shared context from existing document
+        state_manager.set_current_document(document)
+        state_manager.set_current_page_index(len(document.pages) - 1)
 
     # Generate PDF for the page using the PDF service
-    asset_manager = st.session_state.asset_manager
-    pdf_service = PDFService(template_engine, asset_manager)
-
+    asset_manager = state_manager.asset_manager
+    pdf_service = PDFService(engine, asset_manager)
     # Add the page PDF to the page context
+    page_index = state_manager.get_current_page_index()
     page_pdf_url, preview_url = pdf_service.save_page_pdf(
         page_context,
-        st.session_state.document.shared_context,
-        st.session_state.current_page_index
+        shared_context,
+        page_index
     )
-    
+
     # Update the page context with PDF URLs after page creation
-    current_page_ctx = st.session_state.document.pages[st.session_state.current_page_index]
-    current_page_ctx.pdf_url = page_pdf_url
-    current_page_ctx.preview_url = preview_url
+    # current_page_ctx = state_manager.get_current_document().pages[page_index]
+    state_manager.update_page_urls(page_pdf_url, preview_url, page_index)
 
     # Set the current page index to the last page (newly added page)
-    st.session_state.current_page_index = len(st.session_state.document.pages) - 1
+    state_manager.set_current_page_index(page_index)
 
     # Clear the new_page session state
-    st.session_state.new_page = {}
-    st.session_state.wizard_step = 0
+    state_manager.reset_new_page()
+    state_manager.set_wizard_step(0)
 
 def save_document() -> None:
     """
     Save the current document to the asset manager as a JSON file.
     This function serializes the document object and saves it to the configured storage backend.
     """
-    if st.session_state.document is not None:
-        document = st.session_state.get("document")
-        asset_manager: AssetManager = st.session_state.get("asset_manager")
-
+    document = state_manager.get_current_document()
+    if document is not None:
+        asset_manager: AssetManager = state_manager.asset_manager
         try:
             # Use model_dump with serialization mode to properly handle enums
             document_dict = document.model_dump(mode='json')
-
             # Convert to JSON string and save
             document_json = json.dumps(document_dict)
             document_name = f"{DOCUMENT_PREFIX}{document.name}.json"  # Use document ID to ensure uniqueness
             asset_manager.save(document_name, document_json.encode('utf-8'), AssetType.JSON)
 
-            st.session_state.show_confirm_success = True
-            st.session_state.success_message = f"Document '{document.name}' saved successfully!"
+            state_manager.show_success_message(f"Document {document.name} saved successfully!")
 
         except Exception as e:
             st.error(f"Error saving document: {e}")
 
-def load_document(document_name: str):
-    asset_manager: AssetManager = st.session_state.get("asset_manager")
-    
-    try:
-        # Get the document JSON from the asset manager
-        document_bytes = asset_manager.get(document_name, AssetType.JSON)
-        document_json = document_bytes.decode('utf-8')
-
-        # Create the Document object from the JSON
-        document = Document.from_json(document_json)
-
-        # Update session state with the loaded document
-        st.session_state.document = document
-        st.session_state.current_page_index = 0  # Default to first page
-
-        st.success(f"Document '{document.name}' loaded successfully!")
-        st.rerun()
-        return document
-    except Exception as e:
-        st.error(f"Error loading document: {e}")
-        return None
-
-def list_documents():
-    """List all documents saved in the asset manager."""
-    asset_manager: AssetManager = st.session_state.get("asset_manager")
-    try:
-        json_files = asset_manager.list(AssetType.JSON)
-        document_files = [f for f in json_files if f.endswith('.json') and f.startswith(DOCUMENT_PREFIX)]
-        return document_files
-    except Exception as e:
-        st.error(f"Error listing documents: {e}")
-        return []
-
-def delete_document(document_name: str) -> bool:
-    """Delete a document from the asset manager."""
-    asset_manager: AssetManager = st.session_state.get("asset_manager")
-    try:
-        # Check if document exists before attempting deletion
-        document_name = f"documents:{document_name}.json"
-        document_files = asset_manager.list(AssetType.JSON)
-        found = False
-        for document_file in document_files:
-            if document_name == f"documents:{document_file.split('documents:')[1]}":
-                found = True
-                break
-        
-        if not found:
-            st.error(f"Document '{document_name.split('documents:')[1][:-5]}' not found")
-            return False
-
-        asset_manager.delete(document_name, AssetType.JSON)
-
-        # If the deleted document is the currently loaded one, clear the session state
-        if (st.session_state.get("document") and
-            f"documents:{st.session_state.document.name}.json" == document_name):
-            st.session_state.document = None
-            st.session_state.current_page_index = 0
-        
-        update_document_list()
-        return True
-
-    except Exception as e:
-        st.error(f"Error deleting document: {e}")
-        return False
-
 def generate_svg_from_json(json_data: dict, side: str):
     """
     Generate an SVG from JSON wall data for a specific side.
-    
+
     Args:
         json_data: Dictionary containing wall data
         side: The side to generate the projection for (e.g., "North", "South")
-        
+
     Returns:
         SVG element or None if an error occurs
     """
@@ -285,10 +212,10 @@ def generate_svg_from_json(json_data: dict, side: str):
 def process_table(df: pd.DataFrame) -> pd.DataFrame:
     """
     Process a DataFrame by removing unnamed columns and replacing NaN values.
-    
+
     Args:
         df: Input DataFrame to process
-        
+
     Returns:
         Processed DataFrame with unnamed columns removed and NaN values replaced
     """
@@ -311,7 +238,7 @@ def save_uploaded_file_to_asset_manager(uploaded_file, asset_prefix="asset", is_
     if not uploaded_file:
         return ""
 
-    asset_manager = st.session_state.asset_manager
+    asset_manager = state_manager.asset_manager
 
     if is_svg:
         file_extension = "svg"
@@ -334,14 +261,14 @@ def save_uploaded_file_to_asset_manager(uploaded_file, asset_prefix="asset", is_
 def save_wall_projection_to_asset_manager(svg_string: str) -> str:
     """
     Save a wall projection SVG string to the asset manager and return the URL.
-    
+
     Args:
         svg_string: SVG content as a string
-        
+
     Returns:
         URL of the saved SVG asset
     """
-    asset_manager = st.session_state.asset_manager
+    asset_manager = state_manager.asset_manager
     asset_name = f"wall_projection_{str(uuid4())}.svg"
     asset_content = svg_string.encode('utf-8')
     asset_manager.save(asset_name, asset_content, AssetType.SVG)
@@ -353,57 +280,45 @@ def update_page_from_edits() -> None:
     Update the current page from pending edits in the session state.
     This function processes pending changes and saves an updated PDF for the page.
     """
-    asset_manager = st.session_state.asset_manager
-    pdf_service = PDFService(template_engine, asset_manager)
+    asset_manager = state_manager.asset_manager
+    pdf_service = PDFService(engine, asset_manager)
+    document = state_manager.get_current_document()
+    document_list = state_manager.get_document_list()
 
-    if not st.session_state.pending_changes:
+    if not state_manager.has_pending_changes():
         return
 
-    page = st.session_state.document.pages[st.session_state.current_page_index]
-    for key, value in st.session_state.pending_changes.items():
+    current_index = state_manager.get_current_page_index()
+    page = state_manager.get_current_document().pages[current_index]
+    pending_changes = state_manager.get_pending_changes()
+    for key, value in pending_changes:
         match key:
             case "table":
-                page.table_data = value
+                if value is not None:
+                    page.table_data = value
             case "view":
-                page.views[0] = value
+                if value is not None:
+                    page.views[0] = value
             case "page_title":
-                page.page_title = value
+                if value is not None:
+                    page.page_title = value
             case _:
                 pass
 
     pdf_url, preview_url = pdf_service.save_page_pdf(
         page,
-        st.session_state.document.shared_context,
-        st.session_state.current_page_index
+        document.shared_context,
+        current_index
     )
     page.pdf_url = pdf_url
     page.preview_url = preview_url
 
-    if st.session_state.current_page_index == 0 and st.session_state.document is not None:
-        doc_name = st.session_state.document.name
-        for doc_info in st.session_state.document_list:
+    if current_index == 0 and document is not None:
+        doc_name = document.name
+        for doc_info in document_list:
             if doc_info["name"] == doc_name:
                 doc_info["preview"] = preview_url
                 break
-    st.session_state.pending_changes = {}
-    st.session_state.show_confirm_success = True
-    st.session_state.success_message = f"Page updated successfully!"
-    st.session_state.isEditing = False
-
-def delete_page(page_index: int) -> None:
-    """
-    Delete a page from the document at the specified index.
-    
-    Args:
-        page_index: Index of the page to delete
-    """
-    current_page = st.session_state.current_page_index
-    if page_index == 0 and len(st.session_state.document.pages) == 1:
-        st.toast("Cannot delete last page, maybe you wanted to delete the document?", icon="⚠️")
-        return
-    if current_page >= page_index:
-        st.session_state.current_page_index -= 1
-    st.session_state.document = st.session_state.document.delete_page(page_index)
-    st.session_state.show_confirm_success = True
-    st.session_state.success_message = f"Page deleted successfully!"
-    st.rerun()
+    state_manager.clear_pending_changes()
+    state_manager.show_success_message("Page updated successfully!")
+    state_manager.set_editing_mode(False)

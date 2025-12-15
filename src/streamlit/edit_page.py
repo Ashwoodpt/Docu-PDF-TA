@@ -5,6 +5,7 @@ from src.streamlit.processing import generate_svg_from_json,process_table,save_u
 from src.models.context_model import TableData
 from src.models.enums import ViewType
 from lxml import etree
+from src.streamlit.state_manager import state_manager
 
 def edit_page() -> None:
     """
@@ -13,22 +14,26 @@ def edit_page() -> None:
     panorama images, wall projections, and table data, with changes tracked
     in pending changes until the user saves them.
     """
-    page = st.session_state.document.pages[st.session_state.current_page_index]
+    page = state_manager.get_current_page()
+    document = state_manager.get_current_document()
+    pending_changes = state_manager.get_pending_changes()
     pending_view = page.views[0].copy()
+    st.write(pending_changes)
     
     with st.container():
-        current_title = st.session_state.document.pages[st.session_state.current_page_index].page_title
+        current_title = page.page_title
+        st.write(current_title)
         new_title = st.text_input("Page Title", value=current_title, key="page_title_input")
         
         if new_title != current_title:
-            st.session_state.pending_changes["page_title"] = new_title
-        elif "page_title" in st.session_state.pending_changes:
-            del st.session_state.pending_changes["page_title"]
+            state_manager.update_pending_changes(page_title=new_title)
+        else:
+            state_manager.update_pending_changes(page_title=None)
     
     st.space(12)
     if pending_view is not None:
         with st.container(horizontal=True,vertical_alignment="center"):
-            side_image = st.session_state.document.pages[st.session_state.current_page_index].views[0].image
+            side_image = page.views[0].image
             with st.container(width='content'):
                 st.image(side_image,width=400,caption="Side View")
 
@@ -44,7 +49,7 @@ def edit_page() -> None:
                     st.image(svg_string,width=400,caption="New side view")
 
         with st.container(horizontal=True,vertical_alignment="center"):
-            pano_image = st.session_state.document.pages[st.session_state.current_page_index].views[0].pano
+            pano_image = page.views[0].pano
             st.image(pano_image,width=400,caption="Pano View")
             new_pano_image = st.file_uploader("Replace", type=["png", "jpg", "jpeg"], key="replace_pano_image",accept_multiple_files=False)
             if new_pano_image:
@@ -53,14 +58,14 @@ def edit_page() -> None:
                 st.image(new_pano_image.getvalue(),width=400,caption="New pano view")
 
         with st.container(horizontal=True,vertical_alignment="top"):
-            side = st.session_state.document.pages[st.session_state.current_page_index].views[0].side
+            side = page.views[0].side
             with st.container():
                 available_sides=["Front", "Back", "Left", "Right"]
-                side = st.session_state.document.pages[st.session_state.current_page_index].views[0].side
+                side = page.views[0].side
                 side_index = available_sides.index(side.value)
                 new_side = st.selectbox("Replace highlight direction", available_sides, index=side_index, key="replace_side")
 
-                wall_data = st.session_state.document.pages[st.session_state.current_page_index].views[0].wall_data
+                wall_data = page.views[0].wall_data
                 new_json = st.file_uploader("Replace", type=["json"], key="replace_json",accept_multiple_files=False)
 
             if new_json:
@@ -83,12 +88,11 @@ def edit_page() -> None:
                     pending_view.side = new_side
                     
     if pending_view != page.views[0]:
-        st.session_state.pending_changes["view"] = pending_view
+        state_manager.update_pending_changes(view=pending_view)
     else:
-        if "view" in st.session_state.pending_changes:
-            del st.session_state.pending_changes["view"]
+        state_manager.update_pending_changes(view=None)
         
-    pending_table = st.session_state.document.pages[st.session_state.current_page_index].table_data.copy()
+    pending_table = page.table_data.copy()
     new_table_data = st.file_uploader("Replace", type=["csv"], key="replace_table_data",accept_multiple_files=False)
     if new_table_data is None:
         table_data = pending_table
@@ -108,10 +112,9 @@ def edit_page() -> None:
         pending_table = TableData(headers=headers, data=data)
 
     if pd.DataFrame(page.table_data.data, columns=page.table_data.headers).equals(pd.DataFrame(pending_table.data, columns=pending_table.headers)) == False:
-        st.session_state.pending_changes["table"] = pending_table
+        state_manager.update_pending_changes(table=pending_table)
     else:
-        if "table" in st.session_state.pending_changes:
-            del st.session_state.pending_changes["table"]
+        state_manager.update_pending_changes(table=None)
 
     with st.container(horizontal_alignment="right"):
         if st.button("Save", key="save_edit",shortcut="ALT+s"):

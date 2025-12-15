@@ -43,5 +43,24 @@ class LocalAssetManager(AssetManager):
         path.unlink(missing_ok=True)
 
     def get_public_url(self, name, asset_type):
+        """
+        Get the public URL for an asset.
+        
+        Args:
+            name (str): Name of the asset
+            asset_type (AssetType): Type of the asset
+            
+        Returns:
+            str: File URL for the asset
+        """
         path = self._get_path(name, asset_type)
         return f"file://{path.absolute()}"
+    
+    def health_check(self):
+        """
+        Check the health of the local storage system.
+        
+        Returns:
+            bool: True indicating the local storage is always available
+        """
+        return True

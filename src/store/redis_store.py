@@ -102,7 +102,20 @@ class RedisAssetManager:
             temp_path.write_bytes(content)
 
         return f"{temp_path.absolute()}"
+    
+    def health_check(self):
+        """
+        Check if the Redis connection is healthy by pinging the server.
+        
+        Returns:
+            bool: True if the Redis server responds to ping, False otherwise
+        """
+        return self.client.ping()
 
     def clear_temp_cache(self):
+        """
+        Clear the temporary asset cache directory if it exists.
+        This removes all temporary files created during asset serving.
+        """
         if Path("temp_assets").exists():
             shutil.rmtree("temp_assets")
